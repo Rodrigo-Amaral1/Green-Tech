@@ -4,24 +4,53 @@ import { processCSV } from '../services/csvService';
 import { processPDF } from '../services/pdfService';
 import Boleto from '../models/Boleto';
 import Lote from '../models/Lote';
+import fs from 'fs';
 
 const router = Router();
 
 router.post('/import-csv', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ 
+        error: 'No file uploaded',
+        message: 'Por favor, envie um arquivo CSV'
+      });
+    }
+
+    // Verifica se o arquivo é CSV
+    if (!req.file.originalname.endsWith('.csv')) {
+      fs.unlinkSync(req.file.path); // Remove o arquivo
+      return res.status(400).json({ 
+        error: 'Invalid file type',
+        message: 'O arquivo deve ser um CSV'
+      });
     }
 
     const result = await processCSV(req.file.path);
     
-    res.json({
-      message: 'CSV processed successfully',
-      details: result
-    });
+    // Remove o arquivo após processamento
+    fs.unlinkSync(req.file.path);
+
+    if (result.errors > 0) {
+      res.status(207).json({
+        message: 'Processamento concluído com erros',
+        ...result
+      });
+    } else {
+      res.json({
+        message: 'CSV processado com sucesso',
+        ...result
+      });
+    }
   } catch (error) {
     console.error('Error processing CSV:', error);
-    res.status(500).json({ error: 'Error processing CSV file' });
+    if (req.file) {
+      fs.unlinkSync(req.file.path); // Remove o arquivo em caso de erro
+    }
+    res.status(500).json({ 
+      error: 'Error processing CSV file',
+      message: error instanceof Error ? error.message : 'Erro desconhecido'
+    });
   }
 });
 

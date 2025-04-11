@@ -35,7 +35,10 @@ sequelize.authenticate()
     console.error('Unable to connect to the database:', err);
   });
 
-// Routes
+// Mount all routes under /api prefix
+app.use('/api', importRoutes);
+
+// Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Green-Tech API' });
 });
@@ -59,9 +62,6 @@ app.get('/boletos', async (req, res) => {
     res.status(500).json({ error: 'Error fetching boletos' });
   }
 });
-
-// Import routes
-app.use('/api', importRoutes);
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,0 +1,202 @@
+{
+  "info": {
+    "name": "Green Tech API",
+    "description": "API para gerenciamento de boletos e lotes",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Boletos",
+      "item": [
+        {
+          "name": "Listar Boletos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/boletos?nome={{nome}}&valor_inicial={{valor_inicial}}&valor_final={{valor_final}}&id_lote={{id_lote}}&relatorio={{relatorio}}",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["boletos"],
+              "query": [
+                {
+                  "key": "nome",
+                  "value": "{{nome}}",
+                  "description": "Nome do sacado (busca parcial)"
+                },
+                {
+                  "key": "valor_inicial",
+                  "value": "{{valor_inicial}}",
+                  "description": "Valor mínimo"
+                },
+                {
+                  "key": "valor_final",
+                  "value": "{{valor_final}}",
+                  "description": "Valor máximo"
+                },
+                {
+                  "key": "id_lote",
+                  "value": "{{id_lote}}",
+                  "description": "ID do lote"
+                },
+                {
+                  "key": "relatorio",
+                  "value": "{{relatorio}}",
+                  "description": "1 para gerar PDF"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Boleto por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/boletos/:id",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["boletos", ":id"]
+            }
+          }
+        },
+        {
+          "name": "Criar Boleto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nome_sacado\": \"João Silva\",\n    \"id_lote\": 1,\n    \"valor\": 100.50,\n    \"linha_digitavel\": \"12345678901234567890\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/boletos",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["boletos"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lotes",
+      "item": [
+        {
+          "name": "Listar Lotes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/lotes",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["lotes"]
+            }
+          }
+        },
+        {
+          "name": "Criar Lote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nome\": \"Lote 1\",\n    \"ativo\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/lotes",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["lotes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Importação",
+      "item": [
+        {
+          "name": "Importar CSV",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/import-csv",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["import-csv"]
+            }
+          }
+        },
+        {
+          "name": "Importar PDF",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:3000/import-pdf",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["import-pdf"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "nome",
+      "value": "João"
+    },
+    {
+      "key": "valor_inicial",
+      "value": "100"
+    },
+    {
+      "key": "valor_final",
+      "value": "500"
+    },
+    {
+      "key": "id_lote",
+      "value": "1"
+    },
+    {
+      "key": "relatorio",
+      "value": "0"
+    }
+  ]
+} 

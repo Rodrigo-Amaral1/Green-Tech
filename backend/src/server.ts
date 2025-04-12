@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-const sequelize = require('./config/database');
+import { sequelize } from './config/database';
 import syncDatabase from './config/sync';
 import Lote from './models/Lote';
 import Boleto from './models/Boleto';

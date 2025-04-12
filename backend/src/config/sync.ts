@@ -1,4 +1,4 @@
-import sequelize from './database';
+import { sequelize } from './database';
 import Lote from '../models/Lote';
 import Boleto from '../models/Boleto';
 

@@ -1,169 +1,102 @@
-# Green Tech - Backend
+# Sistema de Importação de Boletos - Guia de Avaliação
 
-Backend para sistema de gerenciamento de boletos e lotes, desenvolvido em Node.js com TypeScript.
+## 💻 Configuração Rápida
 
-## 🚀 Como rodar o projeto
-
-### Pré-requisitos
-- Node.js (versão 14 ou superior)
-- PostgreSQL
-- npm ou yarn
-
-### Configuração do ambiente
-
-1. Clone o repositório:
+1. **Instale as dependências**
 ```bash
-git clone [url-do-repositorio]
-cd green-tech/backend
-```
-
-2. Instale as dependências:
-```bash
+cd backend
 npm install
 ```
 
-3. Configure o arquivo `.env`:
+2. **Configure o banco de dados**
+Crie um arquivo `.env`:
 ```env
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=green_tech
+DB_NAME=seu_banco
 DB_USER=seu_usuario
-DB_PASS=sua_senha
-PORT=3000
+DB_PASSWORD=sua_senha
 ```
 
-4. Inicie o servidor em modo desenvolvimento:
+3. **Execute as migrações**
+```bash
+npm run migrate
+```
+
+4. **Inicie o sistema**
 ```bash
 npm run dev
 ```
 
-O servidor estará rodando em `http://localhost:3000`
+## 🔄 Comandos de Migração
 
-## 📝 Endpoints disponíveis
+- **Criar tabelas**: `npm run migrate`
+- **Desfazer última migração**: `npm run migrate:undo`
+- **Desfazer todas as migrações**: `npm run migrate:undo:all`
 
-### Boletos
-- `GET /boletos` - Lista todos os boletos (com filtros)
-- `GET /boletos/:id` - Busca um boleto específico
-- `POST /boletos` - Cria um novo boleto
-- `PUT /boletos/:id` - Atualiza um boleto
-- `DELETE /boletos/:id` - Remove um boleto
+## 🧪 Roteiro de Testes
 
-### Lotes
-- `GET /lotes` - Lista todos os lotes
-- `GET /lotes/:id` - Busca um lote específico
-- `POST /lotes` - Cria um novo lote
-- `PUT /lotes/:id` - Atualiza um lote
-- `DELETE /lotes/:id` - Remove um lote
+### 1. Importação de CSV
+1. Use o arquivo de exemplo em `backend/docs/boletos.csv`
+2. Faça POST para `http://localhost:3000/api/import-csv`
+3. Resultado esperado: Lista de boletos importados com sucesso
 
-### Importação
-- `POST /import-csv` - Importa boletos via CSV
-- `POST /import-pdf` - Importa e processa PDFs de boletos
+### 2. Importação de PDF
+1. Use o arquivo de exemplo em `backend/docs/boletos.pdf`
+2. Faça POST para `http://localhost:3000/api/import-pdf`
+3. Resultado esperado: PDFs individuais gerados em `uploads/boletos/`
 
-## 🧪 Como testar os endpoints
+### 3. Consulta de Boletos
+1. Acesse `http://localhost:3000/boletos`
+2. Teste os filtros:
+   - Por nome: `?nome=João`
+   - Por valor: `?valor_inicial=100&valor_final=200`
+   - Por lote: `?id_lote=3`
+3. Gere relatório: `?relatorio=1`
 
-### Usando Postman/Insomnia
+## 🎯 Principais Funcionalidades
 
-1. Importe o arquivo de coleção disponível em `docs/postman_collection.json`
+1. **Importação de Arquivos**
+   - Suporte a CSV e PDF
+   - Validação automática de dados
+   - Mapeamento inteligente de unidades
 
-2. Para testar a importação de CSV, use o arquivo de exemplo:
-```csv
-nome_sacado,id_lote,valor,linha_digitavel
-MARCIA,1,100.00,12345678901234567890
-JOSE,2,200.00,09876543210987654321
-MARCOS,3,300.00,11112222333344445555
-```
+2. **Gerenciamento de Boletos**
+   - Consulta com filtros
+   - Geração de relatórios
+   - Armazenamento organizado
 
-3. Para testar a importação de PDF:
-```bash
-# Gere um PDF de teste
-npm run generate-test-pdf
-```
-O PDF será gerado em `backend/uploads/test.pdf`
+3. **Integração**
+   - API RESTful documentada
+   - Coleção Postman em `docs/postman_collection.json`
+   - Logs detalhados de operações
 
-### Exemplos de requisições
+## 📋 Validação do Sistema
 
-1. Listar boletos com filtros:
-```
-GET http://localhost:3000/boletos?nome=João&valor_inicial=100&valor_final=500
-```
+1. **Mapeamento de Unidades**
+   - Unidade "17" → ID_LOTE = 3
+   - Unidade "18" → ID_LOTE = 6
 
-2. Gerar relatório PDF:
-```
-GET http://localhost:3000/boletos?relatorio=1&nome=João
-```
+2. **Formato dos Dados**
+   - Nome do Sacado: Texto (máx 255 caracteres)
+   - Valor: Decimal (10,2)
+   - Linha Digitável: 47 dígitos
 
-3. Importar CSV:
-```
-POST http://localhost:3000/import-csv
-Content-Type: multipart/form-data
-file: [arquivo.csv]
-```
+3. **Verificações de Sucesso**
+   - Boletos salvos no banco
+   - PDFs gerados corretamente
+   - Consultas retornando dados esperados
 
-4. Importar PDF:
-```
-POST http://localhost:3000/import-pdf
-Content-Type: multipart/form-data
-file: [arquivo.pdf]
-```
+## 🆘 Suporte
 
-## 💡 Decisões técnicas
-
-### Arquitetura
-- **MVC**: Adotamos o padrão Model-View-Controller para organização do código
-- **Sequelize**: ORM escolhido para interação com o banco PostgreSQL
-- **TypeScript**: Para tipagem estática e melhor manutenibilidade
-
-### Upload de arquivos
-- **Multer**: Middleware para processamento de uploads
-- **Validações**: 
-  - Tamanho máximo: 10MB
-  - Tipos permitidos: CSV e PDF
-  - Um arquivo por requisição
-
-### Processamento de PDFs
-- **PDFKit**: Biblioteca para geração de PDFs
-- **Ordenação**: Páginas são ordenadas conforme a regra MARCIA, JOSE, MARCOS
-- **Base64**: PDFs são codificados em base64 para transferência
-
-### Banco de dados
-- **PostgreSQL**: Escolhido por sua robustez e suporte a JSON
-- **Migrations**: Estrutura do banco versionada
-- **Associações**: Relacionamentos entre boletos e lotes
-
-## 📌 Observações finais
-
-### Mapeamento de dados
-- **CSV para Banco**: Dados são validados e convertidos antes da inserção
-- **PDF para Arquivos**: Cada página é salva como PDF individual
-- **Nomes de arquivos**: Usam timestamp para evitar conflitos
-
-### Segurança
-- Validação de tipos de arquivo
-- Limites de tamanho
-- Sanitização de inputs
-
-### Performance
-- Paginação em consultas
-- Processamento assíncrono de arquivos
-- Deleção automática de arquivos temporários
-
-### Melhorias futuras
-- Implementar autenticação
-- Adicionar cache para consultas frequentes
-- Melhorar tratamento de erros
-- Implementar filas para processamento pesado
-
-## 📚 Documentação
-
-A documentação completa da API está disponível em:
-```
-http://localhost:3000/api-docs
-```
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request 
+Para dúvidas ou problemas durante a avaliação:
+1. Verifique os logs no console
+2. Consulte a [documentação técnica](DOCUMENTATION.md) para detalhes sobre:
+   - Arquitetura do sistema
+   - Estrutura do banco de dados
+   - Endpoints da API
+   - Processamento de arquivos
+   - Mapeamento de unidades
+   - Logs e monitoramento
+   - Configuração do ambiente
+3. Contate o desenvolvedor responsável 

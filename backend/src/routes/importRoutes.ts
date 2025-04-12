@@ -12,7 +12,7 @@ router.post('/import-csv', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ 
-        error: 'No file uploaded',
+        error: 'Nenhum arquivo enviado',
         message: 'Por favor, envie um arquivo CSV'
       });
     }
@@ -21,7 +21,7 @@ router.post('/import-csv', upload.single('file'), async (req, res) => {
     if (!req.file.originalname.endsWith('.csv')) {
       fs.unlinkSync(req.file.path); // Remove o arquivo
       return res.status(400).json({ 
-        error: 'Invalid file type',
+        error: 'Tipo de arquivo inválido',
         message: 'O arquivo deve ser um CSV'
       });
     }
@@ -67,12 +67,12 @@ router.post('/import-pdf', upload.single('file'), async (req, res) => {
     const result = await processPDF(req.file.path);
     
     res.json({
-      message: 'PDF processed successfully',
+      message: 'PDF processado com sucesso',
       details: result
     });
   } catch (error) {
     console.error('Error processing PDF:', error);
-    res.status(500).json({ error: 'Error processing PDF file' });
+    res.status(500).json({ error: 'Erro ao processar o arquivo PDF' });
   }
 });
 
@@ -108,8 +108,8 @@ router.post('/boletos', async (req, res) => {
     const lote = await Lote.findByPk(id_lote);
     if (!lote) {
       return res.status(404).json({ 
-        error: 'Lote not found',
-        message: `No Lote found with id ${id_lote}`
+        error: 'Lote não encontrado',
+        message: `Nenhum lote encontrado com o id ${id_lote}`
       });
     }
 
@@ -135,14 +135,14 @@ router.post('/boletos', async (req, res) => {
     console.error('Error creating boleto:', error);
     if (error instanceof Error) {
       res.status(500).json({ 
-        error: 'Error creating boleto',
-        details: error.message,
+        error: 'Erro ao criar boleto',
+        details: 'Erro desconhecido ocorreu',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     } else {
       res.status(500).json({ 
-        error: 'Error creating boleto',
-        details: 'Unknown error occurred'
+        error: 'Erro ao criar boleto',
+        details: 'Erro desconhecido ocorreu'
       });
     }
   }
@@ -163,14 +163,14 @@ router.post('/lotes', async (req, res) => {
 
     res.status(201).json(lote);
   } catch (error) {
-    console.error('Error creating lote:', error);
+    console.error('Erro ao criar lote:', error);
     if (error instanceof Error) {
       res.status(500).json({ 
-        error: 'Error creating lote',
+        error: 'Erro ao criar lote',
         details: error.message
       });
     } else {
-      res.status(500).json({ error: 'Error creating lote' });
+      res.status(500).json({ error: 'Erro ao criar lote' });
     }
   }
 });
@@ -180,8 +180,8 @@ router.get('/lotes', async (req, res) => {
     const lotes = await Lote.findAll();
     res.json(lotes);
   } catch (error) {
-    console.error('Error fetching lotes:', error);
-    res.status(500).json({ error: 'Error fetching lotes' });
+    console.error('Erro ao buscar lotes:', error);
+    res.status(500).json({ error: 'Erro ao buscar lotes' });
   }
 });
 
@@ -192,21 +192,21 @@ router.get('/boletos/:id', async (req, res) => {
 
     if (!boleto) {
       return res.status(404).json({ 
-        error: 'Boleto not found',
-        message: `No boleto found with id ${id}`
+        error: 'Boleto não encontrado',
+        message: `Nenhum boleto encontrado com o id ${id}`
       });
     }
 
     res.json(boleto);
   } catch (error) {
-    console.error('Error fetching boleto:', error);
+    console.error('Erro ao buscar boletos:', error);
     if (error instanceof Error) {
       res.status(500).json({ 
-        error: 'Error fetching boleto',
+        error: 'Erro ao buscar boletos',
         details: error.message
       });
     } else {
-      res.status(500).json({ error: 'Error fetching boleto' });
+      res.status(500).json({ error: 'Erro ao buscar boletos' });
     }
   }
 });
@@ -216,14 +216,14 @@ router.get('/boletos', async (req, res) => {
     const boletos = await Boleto.findAll();
     res.json(boletos);
   } catch (error) {
-    console.error('Error fetching boletos:', error);
+    console.error('Erro ao buscar boletos:', error);
     if (error instanceof Error) {
       res.status(500).json({ 
-        error: 'Error fetching boletos',
+        error: 'Erro ao buscar boletos',
         details: error.message
       });
     } else {
-      res.status(500).json({ error: 'Error fetching boletos' });
+      res.status(500).json({ error: 'Erro ao buscar boletos' });
     }
   }
 });
@@ -238,14 +238,14 @@ router.get('/lotes/with-boletos', async (req, res) => {
     });
     res.json(lotes);
   } catch (error) {
-    console.error('Error fetching lotes with boletos:', error);
+    console.error('Erro ao buscar lotes com boletos:', error);
     if (error instanceof Error) {
       res.status(500).json({ 
-        error: 'Error fetching lotes with boletos',
+        error: 'Erro ao buscar lotes com boletos',
         details: error.message
       });
     } else {
-      res.status(500).json({ error: 'Error fetching lotes with boletos' });
+      res.status(500).json({ error: 'Erro ao buscar lotes com boletos' });
     }
   }
 });

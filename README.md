@@ -15,7 +15,7 @@ npm install sequelize
 ```
 
 3. **Configure o banco de dados**
-Crie um arquivo `.env`:
+Crie um arquivo `.env` na raiz do projeto:
 ```env
 # Configurações do Banco de Dados
 DB_HOST=localhost
@@ -31,12 +31,20 @@ PORT=3000
 MAX_FILE_SIZE=10485760 # 10MB em bytes
 ```
 
-4. **Execute as migrações**
+4. **Configuração do Sequelize CLI**
+O projeto possui dois arquivos de configuração do banco de dados:
+- `src/config/database.js`: Usado pelo Sequelize CLI
+
+5. **Execute as migrações**
 ```bash
-sequelize-cli db:migrate
+# No ambiente de desenvolvimento
+npx sequelize-cli db:migrate
+
+# Ou usando o script npm
+npm run migrate
 ```
 
-5. **Inicie o sistema**
+6. **Inicie o sistema**
 ```bash
 npm run dev
 ```
@@ -46,6 +54,20 @@ npm run dev
 - **Criar tabelas**: `npm run migrate`
 - **Desfazer última migração**: `npm run migrate:undo`
 - **Desfazer todas as migrações**: `npm run migrate:undo:all`
+
+## 🏗️ Estrutura do Banco de Dados
+
+O projeto utiliza o Sequelize como ORM e PostgreSQL como banco de dados. A configuração está dividida em:
+
+1. **Configuração da Aplicação** (`database.ts`)
+   - Instância do Sequelize
+   - Configurações de conexão
+   - Opções de pool e logging
+
+2. **Configuração do CLI** (`database.js`)
+   - Configurações por ambiente (development, test, production)
+   - Usado exclusivamente pelo Sequelize CLI
+   - Mantém as mesmas configurações de pool e logging
 
 ## 🧪 Roteiro de Testes
 

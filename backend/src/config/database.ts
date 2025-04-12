@@ -19,8 +19,8 @@ const sequelize = new Sequelize({
   username: DB_USER,
   password: DB_PASSWORD,
   define: {
-    timestamps: true,
-    underscored: true,
+    timestamps: false,
+    underscored: true
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {

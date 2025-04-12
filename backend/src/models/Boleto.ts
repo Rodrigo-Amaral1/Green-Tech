@@ -9,7 +9,7 @@ class Boleto extends Model {
   public valor!: number;
   public linha_digitavel!: string;
   public ativo!: boolean;
-  public readonly criado_em!: Date;
+  public criado_em!: Date;
 }
 
 Boleto.init(
@@ -18,43 +18,44 @@ Boleto.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      allowNull: false
     },
     nome_sacado: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING(255),
+      allowNull: false
     },
     id_lote: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: 'lotes',
-        key: 'id',
-      },
+        key: 'id'
+      }
     },
     valor: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
+      allowNull: false
     },
     linha_digitavel: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING(255),
+      allowNull: false
     },
     ativo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: true
     },
     criado_em: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+      defaultValue: DataTypes.NOW
+    }
   },
   {
     sequelize,
     modelName: 'Boleto',
     tableName: 'boletos',
-    timestamps: false,
+    timestamps: false
   }
 );
 

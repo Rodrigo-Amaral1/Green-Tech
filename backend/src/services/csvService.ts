@@ -5,8 +5,8 @@ import Lote from '../models/Lote';
 import Boleto from '../models/Boleto';
 
 interface CSVRow {
-  nome_sacado: string;
-  unidade: string;  // Changed from id_lote to unidade
+  nome: string;
+  unidade: string;
   valor: string;
   linha_digitavel: string;
 }
@@ -23,7 +23,7 @@ interface ProcessResult {
       unit: string;
       error: string;
       data: {
-        nome_sacado: string;
+        nome: string;
         valor: string;
         linha_digitavel: string;
       };
@@ -50,12 +50,34 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
 
   return new Promise((resolve, reject) => {
     fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('data', async (row: CSVRow) => {
+      .pipe(csv({ separator: ';' }))
+      .on('data', async (row: any) => { // Temporariamente usando any para debug
         rowCount++;
+        
+        // Log da primeira linha para debug
+        if (rowCount === 1) {
+          console.log('Cabeçalho do CSV:', Object.keys(row));
+          console.log('Primeira linha do CSV:', row);
+        }
+
         try {
+          // Verifica se a unidade existe e é válida
+          if (!row.unidade) {
+            const error = `Campo 'unidade' não encontrado na linha ${rowCount}. Campos disponíveis: ${Object.keys(row).join(', ')}`;
+            console.error(error);
+            errors.push({ 
+              row: rowCount, 
+              unit: 'N/A', 
+              error,
+              data: row
+            });
+            errorCount++;
+            return;
+          }
+
           // Formata a unidade para ter 4 dígitos
-          const formattedUnit = row.unidade.padStart(4, '0');
+          const formattedUnit = String(row.unidade).padStart(4, '0');
+          console.log(`Processando unidade ${row.unidade} -> ${formattedUnit}`);
           
           // Busca o lote no banco usando a unidade formatada
           let lote = await Lote.findOne({ where: { nome: formattedUnit } });
@@ -77,7 +99,7 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
                 unit: formattedUnit, 
                 error: errorMessage,
                 data: {
-                  nome_sacado: row.nome_sacado,
+                  nome: row.nome,
                   valor: row.valor,
                   linha_digitavel: row.linha_digitavel
                 }
@@ -88,18 +110,14 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
           }
 
           // Valida os dados
-          if (!row.nome_sacado || !row.valor || !row.linha_digitavel) {
+          if (!row.nome || !row.valor || !row.linha_digitavel) {
             const error = 'Dados incompletos na linha';
-            console.error(error);
+            console.error(error, row);
             errors.push({ 
               row: rowCount, 
               unit: formattedUnit, 
               error,
-              data: {
-                nome_sacado: row.nome_sacado,
-                valor: row.valor,
-                linha_digitavel: row.linha_digitavel
-              }
+              data: row
             });
             errorCount++;
             return;
@@ -114,11 +132,7 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
               row: rowCount, 
               unit: formattedUnit, 
               error,
-              data: {
-                nome_sacado: row.nome_sacado,
-                valor: row.valor,
-                linha_digitavel: row.linha_digitavel
-              }
+              data: row
             });
             errorCount++;
             return;
@@ -126,7 +140,7 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
 
           // Cria o boleto
           await Boleto.create({
-            nome_sacado: row.nome_sacado,
+            nome_sacado: row.nome,
             id_lote: lote.id,
             valor: valor,
             linha_digitavel: row.linha_digitavel,
@@ -134,23 +148,29 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
           });
 
           successCount++;
+          console.log(`Boleto criado com sucesso para ${row.nome} na unidade ${formattedUnit}`);
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
           console.error('Erro ao processar linha:', errorMessage);
+          console.error('Dados da linha:', row);
           errors.push({ 
             row: rowCount, 
             unit: row.unidade || 'N/A', 
             error: errorMessage,
-            data: {
-              nome_sacado: row.nome_sacado,
-              valor: row.valor,
-              linha_digitavel: row.linha_digitavel
-            }
+            data: row
           });
           errorCount++;
         }
       })
       .on('end', () => {
+        console.log('Processamento do CSV concluído');
+        console.log('Resumo:', {
+          total_linhas: rowCount,
+          sucessos: successCount,
+          erros: errorCount,
+          lotes_criados: Object.keys(createdLotes).length
+        });
+        
         resolve({
           success: successCount,
           errors: errorCount,
@@ -173,6 +193,7 @@ export const processCSV = async (filePath: string): Promise<ProcessResult> => {
         });
       })
       .on('error', (error) => {
+        console.error('Erro ao ler o arquivo CSV:', error);
         reject(error);
       });
   });

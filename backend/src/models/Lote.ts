@@ -5,7 +5,7 @@ class Lote extends Model {
   public id!: number;
   public nome!: string;
   public ativo!: boolean;
-  public readonly criado_em!: Date;
+  public criado_em!: Date;
 }
 
 Lote.init(
@@ -14,27 +14,28 @@ Lote.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      allowNull: false
     },
     nome: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     ativo: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: true
     },
     criado_em: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
+      defaultValue: DataTypes.NOW
+    }
   },
   {
     sequelize,
     modelName: 'Lote',
     tableName: 'lotes',
-    timestamps: false,
+    timestamps: false
   }
 );
 

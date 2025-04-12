@@ -78,13 +78,15 @@ router.post('/import-pdf', upload.single('file'), async (req, res) => {
 
 router.post('/boletos', async (req, res) => {
   try {
+    console.log('Dados recebidos:', req.body);
     const { nome_sacado, id_lote, valor, linha_digitavel } = req.body;
 
     // Validate required fields
     if (!nome_sacado || !id_lote || !valor || !linha_digitavel) {
       return res.status(400).json({ 
         error: 'Missing required fields',
-        required: ['nome_sacado', 'id_lote', 'valor', 'linha_digitavel']
+        required: ['nome_sacado', 'id_lote', 'valor', 'linha_digitavel'],
+        received: req.body
       });
     }
 
@@ -111,6 +113,13 @@ router.post('/boletos', async (req, res) => {
       });
     }
 
+    console.log('Criando boleto com dados:', {
+      nome_sacado,
+      id_lote,
+      valor,
+      linha_digitavel
+    });
+
     const boleto = await Boleto.create({
       nome_sacado,
       id_lote,
@@ -118,6 +127,8 @@ router.post('/boletos', async (req, res) => {
       linha_digitavel,
       ativo: true
     });
+
+    console.log('Boleto criado com sucesso:', boleto.toJSON());
 
     res.status(201).json(boleto);
   } catch (error) {

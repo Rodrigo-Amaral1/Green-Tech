@@ -7,9 +7,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "generate-test-pdf": "ts-node src/scripts/generateTestPDF.ts",
-    "migrate": "sequelize-cli db:migrate",
-    "migrate:undo": "sequelize-cli db:migrate:undo",
-    "migrate:undo:all": "sequelize-cli db:migrate:undo:all"
+    "migrate": "npx sequelize-cli db:migrate --config src/config/config.js",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo --config src/config/config.js",
+    "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all --config src/config/config.js"
   },
   "keywords": [],
   "author": "",

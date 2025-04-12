@@ -1,15 +1,5 @@
 # Documentação Técnica - Sistema de Importação de Boletos
 
-## 📚 Índice
-1. [Arquitetura do Sistema](#arquitetura-do-sistema)
-2. [Banco de Dados](#banco-de-dados)
-3. [Migrações](#migrações)
-4. [API Endpoints](#api-endpoints)
-5. [Processamento de Arquivos](#processamento-de-arquivos)
-6. [Mapeamento de Unidades](#mapeamento-de-unidades)
-7. [Logs e Monitoramento](#logs-e-monitoramento)
-8. [Configuração do Ambiente](#configuração-do-ambiente)
-
 ## 🏗️ Arquitetura do Sistema
 
 ### Tecnologias Principais
@@ -317,3 +307,60 @@ npm run generate-test-pdf
   - Prettier
   - TypeScript
   - PostgreSQL 
+
+## 📊 Fluxo de Processos
+
+### Fluxo de Importação de CSV
+```mermaid
+flowchart TD
+    A[Início] --> B[Upload do Arquivo CSV]
+    B --> C[Validação do Formato]
+    C -->|Erro| D[Retorna Erro]
+    C -->|OK| E[Leitura do CSV]
+    E --> F[Processamento Linha por Linha]
+    F --> G[Validação dos Dados]
+    G -->|Erro| H[Registra Erro e Continua]
+    G -->|OK| I[Mapeamento de Unidades]
+    I --> J[Criação do Boleto]
+    J --> K[Salvamento no Banco]
+    K --> L[Fim do Processamento]
+    H --> F
+```
+
+### Fluxo de Importação de PDF
+```mermaid
+flowchart TD
+    A[Início] --> B[Upload do Arquivo PDF]
+    B --> C[Validação do PDF]
+    C -->|Erro| D[Retorna Erro]
+    C -->|OK| E[Extração de Texto]
+    E --> F[Identificação de Campos]
+    F --> G[Validação de Dados]
+    G -->|Erro| H[Registra Erro e Continua]
+    G -->|OK| I[Processamento do Boleto]
+    I --> J[Geração de PDF Individual]
+    J --> K[Salvamento no Banco]
+    K --> L[Fim do Processamento]
+    H --> F
+```
+
+### Fluxo Geral do Sistema
+```mermaid
+flowchart TD
+    A[Cliente] --> B[API REST]
+    B --> C[Processamento de Arquivos]
+    C --> D[Banco de Dados]
+    D --> E[Consultas]
+    E --> F[Relatórios]
+    
+    subgraph "Processamento de Arquivos"
+        C1[CSV] --> C2[Validação]
+        C2 --> C3[Importação]
+        C4[PDF] --> C5[Extração]
+        C5 --> C6[Processamento]
+    end
+    
+    subgraph "Banco de Dados"
+        D1[Lotes] --> D2[Boletos]
+    end
+``` 

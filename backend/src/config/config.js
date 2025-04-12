@@ -1,9 +1,6 @@
-const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const env = process.env.NODE_ENV || 'development';
-
-const config = {
+module.exports = {
   development: {
     username: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'admin',
@@ -14,13 +11,6 @@ const config = {
     define: {
       timestamps: false,
       underscored: true
-    },
-    logging: console.log,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
     }
   },
   test: {
@@ -33,13 +23,6 @@ const config = {
     define: {
       timestamps: false,
       underscored: true
-    },
-    logging: false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
     }
   },
   production: {
@@ -52,35 +35,6 @@ const config = {
     define: {
       timestamps: false,
       underscored: true
-    },
-    logging: false,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
     }
   }
-};
-
-const currentConfig = config[env];
-
-const sequelize = new Sequelize(
-  currentConfig.database,
-  currentConfig.username,
-  currentConfig.password,
-  {
-    host: currentConfig.host,
-    port: currentConfig.port,
-    dialect: currentConfig.dialect,
-    define: currentConfig.define,
-    logging: currentConfig.logging,
-    pool: currentConfig.pool
-  }
-);
-
-// Export both the config and the sequelize instance
-module.exports = {
-  config,
-  sequelize
 }; 

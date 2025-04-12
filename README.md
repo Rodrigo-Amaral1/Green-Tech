@@ -2,28 +2,41 @@
 
 ## 💻 Configuração Rápida
 
-1. **Instale as dependências**
+1. **Instale as dependências globais**
+```bash
+npm install -g sequelize-cli
+```
+
+2. **Instale as dependências do projeto**
 ```bash
 cd backend
 npm install
+npm install sequelize
 ```
 
-2. **Configure o banco de dados**
+3. **Configure o banco de dados**
 Crie um arquivo `.env`:
 ```env
+# Configurações do Banco de Dados
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=seu_banco
-DB_USER=seu_usuario
+DB_NAME=greentech
+DB_USER=postgres
 DB_PASSWORD=sua_senha
+
+# Configurações do Servidor
+PORT=3000
+
+# Configurações de Upload
+MAX_FILE_SIZE=10485760 # 10MB em bytes
 ```
 
-3. **Execute as migrações**
+4. **Execute as migrações**
 ```bash
-npm run migrate
+sequelize-cli db:migrate
 ```
 
-4. **Inicie o sistema**
+5. **Inicie o sistema**
 ```bash
 npm run dev
 ```
